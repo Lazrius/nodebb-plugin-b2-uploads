@@ -27,15 +27,15 @@ plugin.deactivate = function (data) {
 };
 
 plugin.load = async function (params) {
+    const adminRoute = "/admin/plugins/b2-uploads";
+    const { router, middleware } = params;
+    routeHelpers.setupAdminPageRoute(router, adminRoute, renderAdmin);
+
+    params.router.post(`/api${adminRoute}/b2settings`, middleware.applyCSRF, saveB2SettingsEndpoint);
+    params.router.post(`/api${adminRoute}/credentials`, middleware.applyCSRF, saveCredentialsEndpoint);
+
     await getSettings(true)
         .then(() => {
-            const adminRoute = "/admin/plugins/b2-uploads";
-            const { router, middleware } = params;
-            routeHelpers.setupAdminPageRoute(router, adminRoute, renderAdmin);
-
-            params.router.post(`/api${adminRoute}/b2settings`, middleware.applyCSRF, saveB2SettingsEndpoint);
-            params.router.post(`/api${adminRoute}/credentials`, middleware.applyCSRF, saveCredentialsEndpoint);
-
             load();
         })
         .catch(winston.error);
