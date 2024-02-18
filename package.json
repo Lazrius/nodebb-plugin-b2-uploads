@@ -1,0 +1,38 @@
+{
+  "name": "@nodebb/nodebb-plugin-b2-uploads",
+  "version": "1.0.0",
+  "description": "A plugin for NodeBB to upload files and/or images to Backblaze B2",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Lazrius/nodebb-plugin-b2-uploads.git"
+  },
+  "keywords": [
+    "nodebb",
+    "b2",
+    "backblaze",
+    "plugin",
+    "uploads"
+  ],
+  "author": "Lazrius <lazdisco@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Lazrius/nodebb-plugin-b2-uploads/issues"
+  },
+  "nbbpm": {
+    "compatibility": "^3.2.0"
+  },
+  "dependencies": {
+    "backblaze-b2": "^1.7.0",
+    "bluebird": "^3.7.2",
+    "gm": "~1.21.1",
+    "mime": "~1.2.11",
+    "request": "~2.69.0"
+  },
+  "devDependencies": {
+    "eslint": "8.x",
+    "eslint-config-nodebb": "0.2.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "2.x"
+  }
+}
