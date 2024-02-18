@@ -30,7 +30,8 @@ export function init() {
 			data[values[i].name] = values[i].value;
 		}
 
-		$.post(`/api/admin/plugins/b2-uploads/${type}`, data).done(function (response) {
+		console.log(window);
+		$.post(`${config.relative_path}/api/admin/plugins/b2-uploads/${type}`, data).done(function (response) {
 			if (response) {
 				ajaxify.refresh();
 				alerts.success(response);
