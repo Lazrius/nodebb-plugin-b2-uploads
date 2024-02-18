@@ -38,7 +38,6 @@ async function getSettings(refresh) {
  * @param {types.B2Endpoint} req
  */
 function saveB2SettingsEndpoint(req, res, next) {
-console.log(req.body);
 	const data = req.body;
     /** @type {types.B2Settings} */
 	const newSettings = {
@@ -69,13 +68,18 @@ function saveCredentialsEndpoint(req, res, next) {
 }
 
 function saveSettingsToDatabase(newConfig, res, next) {
+    const newObj = {...settings, ...newConfig };
+    if (!applicationKeyIdFromDb || !applicationKeyFromDb) {
+        delete newObj.applicationKey;
+        delete newObj.applicationKeyId;
+    }
+
 	db.setObject(Package.name, {...settings, ...newConfig}, (err) => {
 		if (err) {
 			return next(wrapError(err));
 		}
 
 		refreshSettings();
-        console.log(settings);
 		res.json('Saved!');
 	});
 }
@@ -91,14 +95,11 @@ function renderAdmin(req, res) {
 		applicationKey: (applicationKeyFromDb && settings.applicationKey) || '',
 	};
 
-    console.log(data);
-
 	res.render('admin/plugins/b2-uploads', data);
 }
 
 async function refreshSettings() {
 	const newSettings = await db.getObjectFields(Package.name, Object.keys(settings));
-    console.log(newSettings);
 
     applicationKeyIdFromDb = false;
     applicationKeyFromDb = false;
