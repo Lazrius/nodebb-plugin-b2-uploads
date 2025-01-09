@@ -1,7 +1,7 @@
 "use strict";
 
 // eslint-disable-next-line
-const types = require('./_typedefs');
+require("./_typedefs");
 
 const meta = require.main.require('./src/meta');
 const routeHelpers = require.main.require('./src/routes/helpers');
@@ -11,10 +11,15 @@ const winston = require.main.require("winston");
 const Promise = require("bluebird");
 const fs = Promise.promisifyAll(require("fs"));
 const gm = require("gm");
-const request = require('request');
+const axios = require("axios");
 const { getSettings, renderAdmin, saveB2SettingsEndpoint, saveCredentialsEndpoint } = require("./admin");
 const { wrapError, isExtensionAllowed } = require("./utils");
 const { unload, uploadToB2, load } = require("./b2");
+
+let fileTypeFromBuffer;
+import("file-type").then(x => {
+    fileTypeFromBuffer = x.fileTypeFromBuffer;
+});
 
 const im = gm.subClass({ imageMagick: true });
 
@@ -47,7 +52,7 @@ plugin.uploadImage = async function (data) {
         return data;
     }
 
-    const { image } = data;
+    const { image, uid } = data;
 
     if (!image) {
         winston.error("Image was null or undefined.");
@@ -72,9 +77,12 @@ plugin.uploadImage = async function (data) {
             throw wrapError(`[[error:invalid-file-type, ${allowed.join("&#44; ")}]]`);
         }
 
-        await fs
+        return await fs
             .readFileAsync(image.path)
-            .then((buffer) => uploadToB2(image.name, buffer))
+            .then(async (buffer) => {
+                const fileType = await fileTypeFromBuffer(buffer);
+                return uploadToB2(uid, buffer, true, fileType.mime);
+            })
             .catch((err) => {
                 throw wrapError(err);
             });
@@ -83,12 +91,11 @@ plugin.uploadImage = async function (data) {
             throw wrapError(`[[error:invalid-file-type, ${allowed.join("&#44; ")}]]`);
         }
 
-        const filename = image.url.split("/").pop();
-
+        const filename = uid;
         const imageDimension = parseInt(meta.config.profileImageDimension, 10) || 128;
 
         const promise = new Promise((resolve, reject) => {
-            im(request(image.url), filename)
+            im(axios.get(image.url), filename)
             .resize(`${imageDimension}^`, `${imageDimension}^`)
             .streamAsync()
             .then((err, stdout) => {
@@ -101,8 +108,9 @@ plugin.uploadImage = async function (data) {
                 stdout.on("data", (d) => {
                     buf = Buffer.concat([buf, d]);
                 });
-                stdout.on("end", () => {
-                    uploadToB2(filename, buf, true)
+                stdout.on("end", async () => {
+                    const fileType = await fileTypeFromBuffer(buf);
+                    return uploadToB2(filename, buf, true, fileType.mime)
                     .then(resolve)
                     .catch(reject);
                 });
@@ -137,7 +145,10 @@ plugin.uploadFile = async function (data) {
 
     return fs
         .readFileAsync(file.path)
-        .then((buffer) => uploadToB2(file.name, buffer))
+        .then(async (buffer) => {
+            const fileType = await fileTypeFromBuffer(buffer);
+            return uploadToB2(file.name, buffer, false, fileType.mime);
+        })
         .catch((err) => {
             throw wrapError(err);
         });

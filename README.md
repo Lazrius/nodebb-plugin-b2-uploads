@@ -21,6 +21,10 @@ B2_APPLICATION_KEY_ID=123etc
 
 **Reiteration: I highly advise that you load the applicationKey and applicationKeyId via environment variables as it's far more secure.**
 
+### GOTCHYAs
+
+- Ensure that the Backblaze bucket you are uploading into is designated as a public one
+
 ### Feature Requests & Contributing
 
 This project was primarily created for the forum that I assist in running, and it is scoped to such. However if people would like to contribute I am more than happy to assist in the process.

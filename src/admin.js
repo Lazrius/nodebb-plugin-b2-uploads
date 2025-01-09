@@ -22,7 +22,7 @@ let applicationKeyIdFromDb = false;
 let applicationKeyFromDb = false;
 
 /**
- * 
+ *
  * @param {boolean} refresh Query the database for the settings
  * @returns {Promise<types.Settings>}
  */
@@ -43,7 +43,7 @@ function saveB2SettingsEndpoint(req, res, next) {
 	const newSettings = {
         bucketId: data.bucketId || '',
         bucketPath: data.bucketPath || '',
-        bucketPathImages: data.bucketPath || '',
+        bucketPathImages: data.bucketPathImages || "",
         storeImages: (data.storeImages === "on") || false,
 	};
 

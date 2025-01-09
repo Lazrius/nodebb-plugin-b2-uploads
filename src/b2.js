@@ -5,7 +5,7 @@ const { wrapError } = require('./utils');
 const { getSettings } = require('./admin');
 
 // eslint-disable-next-line
-const types = require('./_typedefs');
+require("./_typedefs");
 
 let b2Api = null;
 let lastAuthorize = new Date(0);
@@ -37,7 +37,7 @@ async function authorize(settings) {
 			b2Api = null;
 			lastAuthorize = new Date(0);
 			throw wrapError(err);
-		});	
+        });
 }
 
 // did i ever tell you JS dates are trash?
@@ -50,12 +50,13 @@ const stillAuthed = () => {
 }
 
 /**
- * 
- * @param {string} fileName 
- * @param {Buffer} buffer 
- * @param {boolean} isImg 
+ *
+ * @param {string} fileName
+ * @param {Buffer} buffer
+ * @param {boolean} isImg
+ * @param {string | undefined} fileMime
  */
-async function uploadToB2(fileName, buffer, isImg) {
+async function uploadToB2(fileName, buffer, isImg, fileMime = undefined) {
 	if (!pluginActive) {
 		// Shouldn't happen, but lets be safe
 		throw wrapError("B2 plugin called while inactive");
@@ -76,7 +77,7 @@ async function uploadToB2(fileName, buffer, isImg) {
 
 	if (path.length !== 0 && path.charAt(path.length - 1) !== '/') {
 		path += '/';
-	} 
+    }
 
 	const urlReq = await b2Api.getUploadUrl({
 		bucketId: settings.bucketId
@@ -86,20 +87,21 @@ async function uploadToB2(fileName, buffer, isImg) {
 		uploadUrl: urlReq.data.uploadUrl,
 		uploadAuthToken: urlReq.data.authorizationToken,
 		fileName: path + fileName,
-		data: buffer
+        data: buffer,
+        mime: fileMime
 	})
-	.then(() => ({
-		name: fileName,
-		url: downloadUrl + fileName
-	}))
+        .then((x) => ({
+            name: fileName,
+            url: downloadUrl + x.data.fileName
+        }))
 	.catch(err => {
 		throw wrapError(err);
 	});
 }
 
 /**
- * 
- * @param {types.Settings | undefined} settings 
+ *
+ * @param {types.Settings | undefined} settings
  */
 function load() {
 	pluginActive = true;
