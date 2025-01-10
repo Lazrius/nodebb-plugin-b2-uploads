@@ -6,8 +6,8 @@
         { "hook": "action:plugin.deactivate", "method": "deactivate"},
 
         { "hook": "filter:admin.header.build", "method": "adminNavigation"},
-        { "hook": "filter:uploadImage", "method": "uploadImage", "priority": 10 },
-        { "hook": "filter:uploadFile", "method": "uploadFile", "priority": 10 }
+        { "hook": "filter:uploadImage", "method": "uploadImage", "priority": 5 },
+        { "hook": "filter:uploadFile", "method": "uploadFile", "priority": 5 }
     ],
     "modules": {
         "../admin/plugins/b2-uploads.js": "./static/lib/admin.js"

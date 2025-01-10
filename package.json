@@ -1,6 +1,6 @@
 {
     "name": "nodebb-plugin-b2-uploads",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "description": "A plugin for NodeBB to upload files and/or images to Backblaze B2",
     "main": "index.js",
     "repository": {
